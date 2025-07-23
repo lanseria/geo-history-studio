@@ -1,3 +1,4 @@
+// server/database/schemas.ts
 import { relations } from 'drizzle-orm'
 import { bigint, bigserial, date, jsonb, numeric, pgEnum, pgSchema, primaryKey, real, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
@@ -18,6 +19,8 @@ export const users = geoHistoryStudioSchema.table('users', {
   password: text('password').notNull(),
   /** 用户角色 ('admin' 或 'user') */
   role: userRoleEnum('role').notNull().default('user'),
+  /** [新增] 用户头像URL */
+  avatar: text('avatar'),
   /** 用户创建时间 */
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
 })

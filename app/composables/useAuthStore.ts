@@ -9,6 +9,15 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!user.value)
   const isAdmin = computed(() => user.value?.role === 'admin')
 
+  // [新增] 计算属性，用于获取用户头像，如果不存在则返回默认头像
+  const userAvatar = computed(() => {
+    // 如果用户存在且 avatar 字段非空，则使用该 URL
+    if (user.value?.avatar)
+      return user.value.avatar
+    // 否则返回默认头像的路径
+    return '/assets/images/default-avatar.svg'
+  })
+
   async function login(credentials: { username: string, password: any }) {
     const data = await $fetch<{ user: UserPayload }>('/api/auth/login', {
       method: 'POST',
@@ -61,7 +70,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { user, isAuthenticated, isAdmin, login, fetchUser, logout }
+  return { user, isAuthenticated, isAdmin, userAvatar, login, fetchUser, logout }
 })
 
 if (import.meta.hot)

@@ -32,6 +32,7 @@ export default defineEventHandler(async (event) => {
     id: user.id,
     username: user.username,
     role: user.role,
+    avatar: user.avatar,
   }
 
   const [localKey, refreshPrivateKey] = await Promise.all([

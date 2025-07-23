@@ -6,6 +6,7 @@ export interface UserPayload {
   id: number
   username: string
   role: 'admin' | 'user'
+  avatar: string | null
 }
 
 // 密码哈希

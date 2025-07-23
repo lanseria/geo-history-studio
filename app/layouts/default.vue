@@ -14,6 +14,7 @@ const authStore = useAuthStore()
         <NuxtLink v-if="authStore.isAdmin" to="/admin/users" class="hover:text-brand-primary">
           用户管理
         </NuxtLink>
+        <img :src="authStore.userAvatar" alt="用户头像" class="rounded-full bg-gray-200 h-8 w-8 object-cover">
         <span>欢迎, {{ authStore.user?.username }}</span>
         <ThemeSwitcher />
         <button class="icon-btn" title="登出" @click="authStore.logout()">

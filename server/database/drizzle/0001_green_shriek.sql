@@ -1,0 +1,1 @@
+ALTER TABLE "geo_history_studio_app"."users" ADD COLUMN "avatar" text;
