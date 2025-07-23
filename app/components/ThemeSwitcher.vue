@@ -26,7 +26,7 @@ const currentIcon = computed(() => {
 </script>
 
 <template>
-  <div ref="dropdownRef" class="relative">
+  <div ref="dropdownRef" class="flex relative">
     <!-- 主题切换按钮 -->
     <button
       class="icon-btn"
@@ -40,12 +40,12 @@ const currentIcon = computed(() => {
     <Transition name="fade">
       <div
         v-if="isDropdownOpen"
-        class="border-border-base mt-2 card p-2 border w-36 right-0 top-full absolute z-10"
+        class="mt-2 card p-2 border border-border-base w-36 right-0 top-full absolute z-10"
       >
         <ul>
           <li v-for="theme in themes" :key="theme.name">
             <button
-              class="hover:bg-surface-base text-sm p-2 text-left rounded-md flex gap-2 w-full items-center"
+              class="text-sm p-2 text-left rounded-md flex gap-2 w-full items-center hover:bg-surface-base"
               :class="{ 'text-brand-primary': colorMode.preference === theme.name }"
               @click="setTheme(theme.name)"
             >

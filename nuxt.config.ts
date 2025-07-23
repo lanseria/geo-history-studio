@@ -44,6 +44,7 @@ export default defineNuxtConfig({
     redis: {
       host: '',
       password: '',
+      db: 4,
     },
   },
 
