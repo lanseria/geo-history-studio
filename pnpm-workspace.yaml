@@ -1,5 +1,11 @@
 packages: []
+
 catalogs:
+  backend:
+    '@types/pg': ^8.15.4
+    drizzle-kit: ^0.31.4
+    drizzle-orm: ^0.44.3
+    pg: ^8.16.3
   build:
     '@nuxt/devtools': ^2.6.2
     '@nuxt/eslint': ^1.7.0
@@ -8,7 +14,6 @@ catalogs:
     '@pinia/nuxt': ^0.11.2
     '@unocss/eslint-config': ^66.3.3
     '@unocss/nuxt': ^66.3.3
-    '@vite-pwa/nuxt': ^1.0.4
     '@vueuse/nuxt': ^13.5.0
     nuxt: ^4.0.1
     unocss: ^66.3.3
@@ -27,6 +32,13 @@ catalogs:
   icons:
     '@iconify-json/carbon': ^1.2.11
     '@iconify-json/twemoji': ^1.2.2
+  utils:
+    bignumber.js: ^9.3.1
+    dayjs-nuxt: ^2.1.11
+    es-toolkit: ^1.39.7
+    paseto-ts: ^2.0.5
+    zod: ^4.0.5
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - esbuild

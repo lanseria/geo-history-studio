@@ -1,4 +1,3 @@
-
 import { appDescription } from './app/constants/index'
 
 export default defineNuxtConfig({
@@ -8,17 +7,17 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/color-mode',
     '@nuxt/eslint',
+    'dayjs-nuxt',
   ],
 
+  ssr: false,
   devtools: {
     enabled: true,
   },
-
   app: {
     head: {
       link: [
-        { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
-        { rel: 'icon', type: 'image/svg+xml', href: '/nuxt.svg' },
+        { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
       ],
       meta: [
@@ -30,9 +29,21 @@ export default defineNuxtConfig({
       ],
     },
   },
+  // [新增] 引入全局 CSS 文件
+  css: [
+    '~/assets/css/main.css',
+  ],
 
   colorMode: {
     classSuffix: '',
+  },
+
+  runtimeConfig: {
+    dbUrl: '',
+    redis: {
+      host: '',
+      password: '',
+    },
   },
 
   future: {
@@ -40,14 +51,12 @@ export default defineNuxtConfig({
   },
 
   experimental: {
-    // when using generate, payload js assets included in sw precache manifest
-    // but missing on offline, disabling extraction it until fixed
     payloadExtraction: false,
     renderJsonPayloads: true,
     typedPages: true,
   },
 
-  compatibilityDate: '2024-08-14',
+  compatibilityDate: '2025-06-25',
 
   nitro: {
     esbuild: {
@@ -55,9 +64,9 @@ export default defineNuxtConfig({
         target: 'esnext',
       },
     },
-    prerender: {
-      crawlLinks: false,
-      routes: ['/'],
+    experimental: {
+      database: true,
+      tasks: true,
     },
   },
 

@@ -11,8 +11,10 @@
     "preview": "nuxt preview",
     "start": "node .output/server/index.mjs",
     "start:generate": "npx serve .output/public",
-    "lint": "eslint .",
-    "typecheck": "nuxt typecheck"
+    "lint": "eslint . --fix",
+    "typecheck": "nuxt typecheck",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:dev",
@@ -22,18 +24,27 @@
     "@nuxt/eslint": "catalog:build",
     "@nuxtjs/color-mode": "catalog:build",
     "@pinia/nuxt": "catalog:build",
+    "@types/pg": "catalog:backend",
     "@unocss/eslint-config": "catalog:build",
     "@unocss/nuxt": "catalog:build",
     "@vueuse/core": "catalog:frontend",
     "@vueuse/nuxt": "catalog:build",
+    "bignumber.js": "catalog:utils",
+    "dayjs-nuxt": "catalog:utils",
+    "drizzle-kit": "catalog:backend",
+    "drizzle-orm": "catalog:backend",
+    "es-toolkit": "catalog:utils",
     "eslint": "catalog:dev",
     "eslint-plugin-format": "catalog:dev",
     "nuxt": "catalog:build",
+    "paseto-ts": "catalog:utils",
+    "pg": "catalog:backend",
     "pinia": "catalog:frontend",
     "typescript": "catalog:dev",
     "unocss": "catalog:build",
     "vue": "catalog:frontend",
-    "vue-tsc": "catalog:dev"
+    "vue-tsc": "catalog:dev",
+    "zod": "catalog:utils"
   },
   "resolutions": {
     "@nuxt/devtools": "catalog:build",

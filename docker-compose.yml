@@ -1,0 +1,17 @@
+# docker-compose.yml (简化后)
+services:
+  geo_history_studio_app:
+    build: .
+    container_name: geo_history_studio_app
+    env_file:
+      - .env.production
+    ports:
+      - '8888:3000'
+    restart: unless-stopped
+    networks:
+      - shared_app_net
+
+networks:
+  shared_app_net:
+    external: true
+    name: shared-db-network

@@ -1,0 +1,84 @@
+/* 定义一些基础变量和全局样式 */
+
+/* 1. Light Mode (默认) */
+:root {
+  /* [修改] 品牌色从 Teal 更换为 Slate Blue */
+  --color-brand-primary: #475569; /* slate-600 */
+  --color-brand-secondary: #1e293b; /* slate-800 */
+  
+  /* 文本颜色 */
+  --color-prose-base: #374151; /* gray-700 */
+  --color-prose-muted: #6b7280; /* gray-500 */
+  /* 背景/表面颜色 */
+  --color-surface-base: #f8fafc; /* slate-50 */
+  --color-surface-muted: #ffffff; /* white */
+  /* 边框颜色 */
+  --color-border-base: #e2e8f0; /* slate-200 */
+}
+
+/* 2. Dark Mode */
+html.dark {
+  /* [修改] 品牌色从 Teal 更换为 Slate Blue */
+  --color-brand-primary: #64748b; /* slate-500 */
+  --color-brand-secondary: #cbd5e1; /* slate-300 */
+
+  /* 文本颜色 */
+  --color-prose-base: #d1d5db; /* gray-300 */
+  --color-prose-muted: #9ca3af; /* gray-400 */
+  /* 背景/表面颜色 */
+  --color-surface-base: #1e293b; /* slate-800 */
+  --color-surface-muted: #334155; /* slate-700 */
+  /* 边框颜色 */
+  --color-border-base: #475569; /* slate-600 */
+}
+
+/* 3. Sepia Mode */
+html.sepia {
+  /* [修改] 品牌色从自定义棕色更换为更和谐的暖棕色 */
+  --color-brand-primary: #855a2c; /* warm brown */
+  --color-brand-secondary: #504231;
+
+  /* 文本颜色 */
+  --color-prose-base: #433422;
+  --color-prose-muted: #715d45;
+  /* 背景/表面颜色 */
+  --color-surface-base: #f1e7d0;
+  --color-surface-muted: #eae0c9;
+  /* 边框颜色 */
+  --color-border-base: #ded0bf;
+}
+
+/* 美化滚动条 (保持不变) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db; /* gray-300 */
+  border-radius: 4px;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563; /* gray-600 */
+}
+
+html.sepia ::-webkit-scrollbar-thumb {
+  background: #c7b89d;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af; /* gray-400 */
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280; /* gray-500 */
+}
+
+html.sepia ::-webkit-scrollbar-thumb:hover {
+  background: #b5a486;
+}
