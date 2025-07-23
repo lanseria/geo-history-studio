@@ -1,4 +1,4 @@
-import { pwa } from './app/config/pwa'
+
 import { appDescription } from './app/constants/index'
 
 export default defineNuxtConfig({
@@ -7,7 +7,6 @@ export default defineNuxtConfig({
     '@unocss/nuxt',
     '@pinia/nuxt',
     '@nuxtjs/color-mode',
-    '@vite-pwa/nuxt',
     '@nuxt/eslint',
   ],
 
@@ -17,7 +16,6 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      viewport: 'width=device-width,initial-scale=1',
       link: [
         { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
         { rel: 'icon', type: 'image/svg+xml', href: '/nuxt.svg' },
@@ -60,7 +58,6 @@ export default defineNuxtConfig({
     prerender: {
       crawlLinks: false,
       routes: ['/'],
-      ignore: ['/hi'],
     },
   },
 
@@ -73,5 +70,4 @@ export default defineNuxtConfig({
     },
   },
 
-  pwa,
 })
