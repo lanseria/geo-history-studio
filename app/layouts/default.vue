@@ -3,9 +3,9 @@ const authStore = useAuthStore()
 </script>
 
 <template>
-  <!-- [修改] 使用新的语义化类名 -->
-  <main class="text-prose-base bg-surface-base font-sans min-h-screen">
-    <!-- [修改] 使用新的语义化类名 -->
+  <!-- [核心修复] 使用 flex 布局，并确保 main 占满整个屏幕高度 -->
+  <main class="text-prose-base bg-surface-base font-sans flex flex-col h-screen">
+    <!-- Header 部分保持不变 -->
     <header class="bg-surface-muted p-4 flex shadow-sm items-center justify-between">
       <NuxtLink to="/" class="text-xl font-bold">
         历史地理信息平台
@@ -21,7 +21,8 @@ const authStore = useAuthStore()
         </button>
       </div>
     </header>
-    <div class="mx-auto p-4 max-w-5xl">
+    <!-- [核心修复] 使用 flex-1 让该区域填充所有剩余空间，并设置 relative 和 overflow-hidden 避免内容溢出 -->
+    <div class="flex-1 w-full relative overflow-hidden">
       <slot />
     </div>
   </main>

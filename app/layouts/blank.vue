@@ -1,6 +1,5 @@
 <template>
-  <!-- [修改] 使用新的语义化类名 -->
-  <main class="text-prose-base bg-surface-base font-sans min-h-screen">
+  <main class="text-prose-base bg-surface-base font-sans h-screen w-screen overflow-hidden">
     <slot />
   </main>
 </template>
