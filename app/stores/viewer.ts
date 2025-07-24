@@ -64,8 +64,8 @@ export const useViewerStore = defineStore('viewer', () => {
 
   // --- 响应式状态 (UI交互) ---
 
-  const selectedLayerName = ref<string>(baseLayers[0]!.name)
-  const showLabels = ref<boolean>(true)
+  const selectedLayerName = ref<string>(baseLayers[2]!.name)
+  const showLabels = ref<boolean>(false)
   const selectedTerrainName = ref<TerrainOption['name']>(terrainOptions[1]!.name)
 
   // --- Getters (Computed) ---
@@ -88,6 +88,24 @@ export const useViewerStore = defineStore('viewer', () => {
     else { // 'UrlTemplate'
       return new Cesium.UrlTemplateImageryProvider({ url: option.url, maximumLevel: 18 })
     }
+  }
+
+  function setInitialCameraView() {
+    if (!viewer.value)
+      return
+
+    // 定义中国的矩形范围 [西经, 南纬, 东经, 北纬]
+    const chinaRectangle = Cesium.Rectangle.fromDegrees(
+      73.5, // West
+      18.0, // South
+      135.0, // East
+      53.5, // North
+    )
+
+    // 将相机视角设置为该矩形范围
+    viewer.value.camera.setView({
+      destination: chinaRectangle,
+    })
   }
 
   // --- Actions ---
@@ -121,7 +139,9 @@ export const useViewerStore = defineStore('viewer', () => {
     // 初始加载
     updateBaseLayer()
     updateLabelLayer()
-    updateTerrain() // 初始调用
+    updateTerrain()
+
+    setInitialCameraView()
   }
 
   /**
