@@ -1,39 +1,96 @@
-name: Deploy via Git Pull
+name: Build and Deploy
 
 on:
   push:
     branches:
-      - release # 当 release 分支有推送时触发
+      - release
 
 jobs:
-  deploy:
+  # --- Job 1: Build Nuxt App ---
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.archiver.outputs.artifact_name }}
 
     steps:
-      - name: Deploy to server
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+
+      - name: Archive production artifacts
+        id: archiver
+        run: |
+          ARTIFACT_FILENAME="output-${{ github.sha }}.tar.gz"
+          tar -zcvf $ARTIFACT_FILENAME .output
+          echo "artifact_name=$ARTIFACT_FILENAME" >> $GITHUB_OUTPUT
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-files
+          path: ${{ steps.archiver.outputs.artifact_name }}
+
+  # --- 更可靠的部署方式 ---
+  reliable-deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: production-files
+          
+      - name: SCP artifact to server
+        uses: appleboy/scp-action@master
+        with:
+          host: 107.191.41.14
+          username: root
+          key: ${{ secrets.KEY }}
+          source: "${{ needs.build.outputs.artifact_name }}"
+          target: "/root/code/geo-history-studio"
+
+      - name: Execute remote commands
         uses: appleboy/ssh-action@master
         with:
           host: 107.191.41.14
           username: root
           key: ${{ secrets.KEY }}
           script: |
-            # [核心部署脚本]
-            # 1. 进入项目目录
-            cd /root/code/geo-history-studio
-
-            # 2. 从 release 分支拉取最新的代码
-            echo "Pulling latest code from release branch..."
+            set -e # 任何命令失败则立即退出
+            
+            TARGET_DIR="/root/code/geo-history-studio"
+            ARTIFACT_NAME="${{ needs.build.outputs.artifact_name }}"
+            
+            cd $TARGET_DIR
+            
+            echo ">>> Pulling latest config files..."
             git pull origin release
-
-            # 3. 使用 Docker Compose 重新构建并启动服务
-            #    --build: 强制重新构建镜像，即使没有基础镜像的变化
-            #    -d: 在后台运行
-            #    --no-deps: 不重新启动依赖（postgres, redis）
-            echo "Rebuilding and restarting services..."
-            docker compose up -d --build --no-deps app
-
-            # 4. (可选) 清理旧的、未使用的 Docker 镜像，释放空间
-            echo "Pruning old Docker images..."
+            
+            echo ">>> Unpacking build artifact..."
+            tar -zxvf $ARTIFACT_NAME
+            
+            echo ">>> Rebuilding Docker image and restarting container..."
+            docker compose up -d --build
+            
+            echo ">>> Cleaning up..."
+            rm $ARTIFACT_NAME
             docker image prune -f
             
-            echo "Deployment finished successfully!"
+            echo ">>> Deployment successful!"

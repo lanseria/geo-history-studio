@@ -1,7 +1,9 @@
 # docker-compose.yml (简化后)
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.production
     container_name: geo_history_studio_app
     env_file:
       - .env
