@@ -14,7 +14,7 @@ const ANNOTATION_LAYER_IDS = [
   'tdt-cta-layer',
 ]
 
-// [核心修改] 定义一个公共的字体源 URL
+// 定义一个公共的字体源 URL
 const GLYPHS_URL = 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
 
 export const useViewerStore = defineStore('viewer', () => {
@@ -23,10 +23,8 @@ export const useViewerStore = defineStore('viewer', () => {
   const isMapInitialized = computed(() => !!map.value)
   const areAnnotationsVisible = ref(false)
 
-  const config = useRuntimeConfig()
-  const tdtKey = config.public.tdtKey
+  const tdtKey = '8c1768e11fec4006319e69e4a2a58793'
 
-  // [核心修改] 为所有样式对象添加 `glyphs` 属性
   const mapStyles: MapStyleOption[] = [
     {
       name: '天地图矢量',
