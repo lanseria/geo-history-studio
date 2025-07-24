@@ -27,6 +27,7 @@
     "@nuxtjs/color-mode": "catalog:build",
     "@pinia/nuxt": "catalog:build",
     "@types/pg": "catalog:backend",
+    "@types/zxcvbn": "catalog:utils",
     "@unocss/eslint-config": "catalog:build",
     "@unocss/nuxt": "catalog:build",
     "@vueuse/core": "catalog:frontend",
@@ -34,7 +35,7 @@
     "bignumber.js": "catalog:utils",
     "cesium": "catalog:frontend",
     "cpx": "catalog:dev",
-    "csv-parse": "catalog:",
+    "csv-parse": "catalog:utils",
     "dayjs-nuxt": "catalog:utils",
     "drizzle-kit": "catalog:backend",
     "drizzle-orm": "catalog:backend",
@@ -49,7 +50,8 @@
     "unocss": "catalog:build",
     "vue": "catalog:frontend",
     "vue-tsc": "catalog:dev",
-    "zod": "catalog:utils"
+    "zod": "catalog:utils",
+    "zxcvbn": "catalog:utils"
   },
   "resolutions": {
     "@nuxt/devtools": "catalog:build",

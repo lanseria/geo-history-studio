@@ -11,7 +11,7 @@ import {
 } from 'unocss'
 
 export default defineConfig({
-  // [核心修改] 更新 shortcuts 以使用新的语义化颜色名称
+  // 更新 shortcuts 以使用新的语义化颜色名称
   shortcuts: [
     ['btn', 'px-4 py-1 rounded inline-block bg-brand-primary text-white cursor-pointer hover:bg-brand-primary/90 disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50'],
     ['icon-btn', 'inline-block cursor-pointer select-none opacity-75 transition duration-200 ease-in-out hover:opacity-100 hover:text-brand-primary'],
@@ -34,7 +34,7 @@ export default defineConfig({
       processors: createLocalFontProcessor(),
     }),
   ],
-  // [核心修改] 采用嵌套对象来定义主题颜色，生成更优雅的类名
+  // 采用嵌套对象来定义主题颜色，生成更优雅的类名
   theme: {
     colors: {
       brand: {

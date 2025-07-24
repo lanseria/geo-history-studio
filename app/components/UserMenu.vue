@@ -1,15 +1,35 @@
 <script setup lang="ts">
 import { onClickOutside, useToggle } from '@vueuse/core'
+// 引入新创建的模态框组件
+import ChangePasswordModal from './ChangePasswordModal.vue'
 
 const authStore = useAuthStore()
 const [isDropdownOpen, toggleDropdown] = useToggle(false)
 const dropdownRef = ref(null)
+
+// 控制修改密码模态框的状态
+const isChangePasswordModalOpen = ref(false)
 
 // 点击菜单外部时，关闭下拉菜单
 onClickOutside(dropdownRef, () => isDropdownOpen.value = false)
 
 async function handleLogout() {
   isDropdownOpen.value = false
+  await authStore.logout()
+}
+
+// 打开修改密码模态框，并关闭下拉菜单
+function openChangePasswordModal() {
+  isDropdownOpen.value = false
+  isChangePasswordModalOpen.value = true
+}
+
+async function handleChangePasswordSuccess() {
+  isChangePasswordModalOpen.value = false
+  // 提示用户密码已修改，然后执行登出操作
+  // 在真实应用中，这里可以使用一个更优雅的 Toast 通知组件
+  // eslint-disable-next-line no-alert
+  alert('密码修改成功！您需要重新登录。')
   await authStore.logout()
 }
 </script>
@@ -46,6 +66,17 @@ async function handleLogout() {
             </p>
           </li>
 
+          <!-- 修改密码按钮 -->
+          <li>
+            <button
+              class="p-2 rounded-md flex gap-3 w-full items-center hover:bg-surface-base"
+              @click="openChangePasswordModal"
+            >
+              <div class="i-carbon-password" />
+              <span>修改密码</span>
+            </button>
+          </li>
+
           <!-- 管理员入口 -->
           <li v-if="authStore.isAdmin">
             <NuxtLink
@@ -72,6 +103,13 @@ async function handleLogout() {
       </div>
     </Transition>
   </div>
+
+  <!-- 引入并绑定模态框组件 -->
+  <ChangePasswordModal
+    :is-open="isChangePasswordModalOpen"
+    @close="isChangePasswordModalOpen = false"
+    @success="handleChangePasswordSuccess"
+  />
 </template>
 
 <style scoped>

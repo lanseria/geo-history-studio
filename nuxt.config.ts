@@ -72,7 +72,16 @@ export default defineNuxtConfig({
   },
   vite: {
     optimizeDeps: {
-      include: ['@vue/devtools-core', '@vue/devtools-kit', 'dayjs', 'dayjs/plugin/updateLocale', 'dayjs/plugin/relativeTime', 'dayjs/plugin/utc', 'cesium'],
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        'dayjs',
+        'dayjs/plugin/updateLocale',
+        'dayjs/plugin/relativeTime',
+        'dayjs/plugin/utc',
+        'cesium',
+        'zxcvbn',
+      ],
     },
   },
 
