@@ -11,12 +11,13 @@
     "preview": "nuxt preview",
     "start": "node .output/server/index.mjs",
     "start:generate": "npx serve .output/public",
-    "postinstall": "pnpm copy:cesium",
-    "copy:cesium": "cpx \"node_modules/cesium/Build/Cesium/{Assets,Widgets,Workers}/**/*\" public/cesium",
     "lint": "eslint . --fix",
     "typecheck": "nuxt typecheck",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "maplibre-gl": "catalog:frontend"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:dev",
@@ -33,8 +34,6 @@
     "@vueuse/core": "catalog:frontend",
     "@vueuse/nuxt": "catalog:build",
     "bignumber.js": "catalog:utils",
-    "cesium": "catalog:frontend",
-    "cpx": "catalog:dev",
     "csv-parse": "catalog:utils",
     "dayjs-nuxt": "catalog:utils",
     "drizzle-kit": "catalog:backend",

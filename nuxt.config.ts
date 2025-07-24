@@ -32,7 +32,6 @@ export default defineNuxtConfig({
   // [新增] 引入全局 CSS 文件
   css: [
     '~/assets/css/main.css',
-    'cesium/Build/Cesium/Widgets/widgets.css',
   ],
 
   colorMode: {
@@ -51,6 +50,9 @@ export default defineNuxtConfig({
       tdtKey: '',
       cesiumIonToken: '',
     },
+  },
+  devServer: {
+    port: 3333,
   },
 
   future: {
@@ -84,7 +86,6 @@ export default defineNuxtConfig({
         'dayjs/plugin/updateLocale',
         'dayjs/plugin/relativeTime',
         'dayjs/plugin/utc',
-        'cesium',
         'zxcvbn',
       ],
     },

@@ -1,253 +1,118 @@
+import type { Map, RasterSourceSpecification, StyleSpecification } from 'maplibre-gl'
+import maplibregl from 'maplibre-gl'
 // app/stores/viewer.ts
-import * as Cesium from 'cesium'
 import { defineStore } from 'pinia'
-import { computed, ref, shallowRef, watch } from 'vue'
 
-// ----- 接口定义 (为了代码清晰和类型安全) -----
-
-// 图层选项接口
-interface ImageryLayerOption {
+// 定义图层样式接口
+interface MapStyleOption {
   name: string
-  type: 'UrlTemplate' | 'Tianditu'
-  url: string
-  layer?: string // 天地图专用: vec, img, ter
+  style: string | StyleSpecification
 }
-
-// 地形选项接口
-interface TerrainOption {
-  name: string
-  type: 'None' | 'CesiumWorldTerrain'
-}
-
-// ----- Store 定义 -----
 
 export const useViewerStore = defineStore('viewer', () => {
   // --- State ---
+  const map = shallowRef<Map | null>(null)
+  const isMapInitialized = computed(() => !!map.value)
 
-  /**
-   * Cesium Viewer 实例。
-   * 使用 shallowRef 来存储，因为 Viewer 对象非常复杂，
-   * 深度代理它会带来不必要的性能开销，且我们只需要它的顶层引用。
-   */
-  const viewer = shallowRef<Cesium.Viewer | null>(null)
-
-  // 内部状态，用于追踪当前加载的图层，方便管理
-  const currentBaseLayer = shallowRef<Cesium.ImageryLayer | null>(null)
-  const currentLabelLayer = shallowRef<Cesium.ImageryLayer | null>(null)
-
-  // useRuntimeConfig 必须在 setup 函数、插件或 store 的顶层作用域中调用
   const config = useRuntimeConfig()
   const tdtKey = config.public.tdtKey
-  // 设置 Cesium Ion 的默认 Token
-  Cesium.Ion.defaultAccessToken = config.public.cesiumIonToken
 
-  const baseLayers: ImageryLayerOption[] = [
-    { name: '天地图影像', type: 'Tianditu', url: `https://t0.tianditu.gov.cn/img_w/wmts?tk=${tdtKey}`, layer: 'img' },
-    { name: '天地图矢量', type: 'Tianditu', url: `https://t0.tianditu.gov.cn/vec_w/wmts?tk=${tdtKey}`, layer: 'vec' },
-    { name: '天地图地形', type: 'Tianditu', url: `https://t0.tianditu.gov.cn/ter_w/wmts?tk=${tdtKey}`, layer: 'ter' },
-    { name: 'ArcGIS 影像', type: 'UrlTemplate', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' },
-    { name: 'ArcGIS 海洋', type: 'UrlTemplate', url: 'https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}' },
-    { name: 'ArcGIS 地貌', type: 'UrlTemplate', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}' },
+  // MapLibre 的样式可以是 URL 或一个完整的 Style Object
+  const mapStyles: MapStyleOption[] = [
+    {
+      name: '天地图矢量',
+      style: {
+        version: 8,
+        sources: {
+          'tdt-vec': {
+            type: 'raster',
+            tiles: [`https://t0.tianditu.gov.cn/vec_w/wmts?tk=${tdtKey}&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}`],
+            tileSize: 256,
+          },
+          'tdt-cva': { // 注记
+            type: 'raster',
+            tiles: [`https://t0.tianditu.gov.cn/cva_w/wmts?tk=${tdtKey}&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}`],
+            tileSize: 256,
+          },
+        },
+        layers: [
+          { id: 'tdt-vec-layer', type: 'raster', source: 'tdt-vec' },
+          { id: 'tdt-cva-layer', type: 'raster', source: 'tdt-cva' },
+        ],
+      },
+    },
+    {
+      name: '天地图影像',
+      style: {
+        version: 8,
+        sources: {
+          'tdt-img': {
+            type: 'raster',
+            tiles: [`https://t0.tianditu.gov.cn/img_w/wmts?tk=${tdtKey}&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}`],
+            tileSize: 256,
+          },
+          'tdt-cia': { // 影像注记
+            type: 'raster',
+            tiles: [`https://t0.tianditu.gov.cn/cia_w/wmts?tk=${tdtKey}&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cia&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}`],
+            tileSize: 256,
+          },
+        },
+        layers: [
+          { id: 'tdt-img-layer', type: 'raster', source: 'tdt-img' },
+          { id: 'tdt-cia-layer', type: 'raster', source: 'tdt-cia' },
+        ],
+      },
+    },
   ]
 
-  const tiandituLabelLayer: ImageryLayerOption = {
-    name: '天地图矢量注记',
-    type: 'Tianditu',
-    url: `https://t0.tianditu.gov.cn/cva_w/wmts?tk=${tdtKey}`,
-    layer: 'cva',
-  }
-
-  const terrainOptions: TerrainOption[] = [
-    { name: '无地形', type: 'None' },
-    { name: 'Cesium 全球地形', type: 'CesiumWorldTerrain' },
-  ]
-
-  // --- 响应式状态 (UI交互) ---
-
-  const selectedLayerName = ref<string>(baseLayers[2]!.name)
-  const showLabels = ref<boolean>(false)
-  const selectedTerrainName = ref<TerrainOption['name']>(terrainOptions[1]!.name)
-
-  // --- Getters (Computed) ---
-
-  const isViewerInitialized = computed(() => !!viewer.value)
-
-  // --- 私有辅助函数 (不导出) ---
-
-  function createImageryProvider(option: ImageryLayerOption): Cesium.ImageryProvider {
-    if (option.type === 'Tianditu') {
-      return new Cesium.WebMapTileServiceImageryProvider({
-        url: option.url,
-        layer: option.layer!,
-        style: 'default',
-        tileMatrixSetID: 'w',
-        format: 'tiles',
-        maximumLevel: 18,
-      })
-    }
-    else { // 'UrlTemplate'
-      return new Cesium.UrlTemplateImageryProvider({ url: option.url, maximumLevel: 18 })
-    }
-  }
-
-  function setInitialCameraView() {
-    if (!viewer.value)
-      return
-
-    // 定义中国的矩形范围 [西经, 南纬, 东经, 北纬]
-    const chinaRectangle = Cesium.Rectangle.fromDegrees(
-      73.5, // West
-      18.0, // South
-      135.0, // East
-      53.5, // North
-    )
-
-    // 将相机视角设置为该矩形范围
-    viewer.value.camera.setView({
-      destination: chinaRectangle,
-    })
-  }
+  const selectedStyleName = ref<string>(mapStyles[0]!.name)
 
   // --- Actions ---
-
-  /**
-   * 初始化 Viewer
-   * @param container - 挂载 Viewer 的 HTMLDivElement
-   */
-  function initViewer(container: HTMLDivElement) {
-    if (!container)
+  function initMap(container: HTMLDivElement) {
+    if (!container || map.value)
       return
 
-    viewer.value = new Cesium.Viewer(container, {
-      baseLayer: false,
-      terrainShadows: Cesium.ShadowMode.ENABLED,
-      animation: false,
-      baseLayerPicker: false,
-      fullscreenButton: false,
-      geocoder: false,
-      homeButton: false,
-      infoBox: false,
-      sceneModePicker: false,
-      selectionIndicator: false,
-      timeline: false,
-      navigationHelpButton: false,
-      scene3DOnly: true,
+    const selectedOption = mapStyles.find(s => s.name === selectedStyleName.value)
+    if (!selectedOption)
+      return
+
+    map.value = new maplibregl.Map({
+      container,
+      style: selectedOption.style,
+      center: [104.195397, 35.86166], // 中国中心点
+      zoom: 3.5,
+      pitch: 0,
+      bearing: 0,
     })
 
-    viewer.value.scene.globe.depthTestAgainstTerrain = false
-
-    // 初始加载
-    updateBaseLayer()
-    updateLabelLayer()
-    updateTerrain()
-
-    setInitialCameraView()
+    // 添加控制器 (缩放、旋转)
+    map.value.addControl(new maplibregl.NavigationControl({}), 'top-right')
   }
 
-  /**
-   * 销毁 Viewer 实例，释放资源
-   */
-  function destroyViewer() {
-    if (viewer.value && !viewer.value.isDestroyed()) {
-      viewer.value.destroy()
+  function destroyMap() {
+    if (map.value) {
+      map.value.remove()
+      map.value = null
     }
-    viewer.value = null
-    currentBaseLayer.value = null
-    currentLabelLayer.value = null
   }
 
-  function updateBaseLayer() {
-    if (!viewer.value)
+  function updateMapStyle() {
+    if (!map.value)
       return
-    if (currentBaseLayer.value) {
-      viewer.value.imageryLayers.remove(currentBaseLayer.value, false)
-      currentBaseLayer.value = null
-    }
-    const selectedOption = baseLayers.find(l => l.name === selectedLayerName.value)
-    if (selectedOption) {
-      const provider = createImageryProvider(selectedOption)
-      currentBaseLayer.value = viewer.value.imageryLayers.addImageryProvider(provider, 0)
-    }
-  }
-
-  function updateLabelLayer() {
-    if (!viewer.value)
-      return
-    if (currentLabelLayer.value) {
-      viewer.value.imageryLayers.remove(currentLabelLayer.value, false)
-      currentLabelLayer.value = null
-    }
-    if (showLabels.value) {
-      const provider = createImageryProvider(tiandituLabelLayer)
-      currentLabelLayer.value = viewer.value.imageryLayers.addImageryProvider(provider)
-    }
-  }
-
-  async function updateTerrain() {
-    if (!viewer.value)
-      return
-    const selectedOption = terrainOptions.find(t => t.name === selectedTerrainName.value)
-    if (selectedOption) {
-      if (selectedOption.type === 'None') {
-        viewer.value.terrainProvider = new Cesium.EllipsoidTerrainProvider()
-      }
-      else if (selectedOption.type === 'CesiumWorldTerrain') {
-        try {
-          const terrainProvider = await Cesium.createWorldTerrainAsync({
-            requestVertexNormals: true,
-            requestWaterMask: true,
-          })
-          viewer.value.terrainProvider = terrainProvider
-        }
-        catch (error) {
-          console.error('加载 Cesium 全球地形失败:', error)
-          viewer.value.terrainProvider = new Cesium.EllipsoidTerrainProvider()
-        }
-      }
-    }
-  }
-
-  /**
-   * 截图功能
-   */
-  async function takeScreenshot() {
-    if (!viewer.value)
-      return
-
-    // 强制先渲染一帧，确保获取到最新画面
-    viewer.value.scene.render()
-
-    const canvas = viewer.value.canvas
-    const dataUrl = canvas.toDataURL('image/png')
-
-    // 创建一个临时的 a 标签来触发下载
-    const link = document.createElement('a')
-    link.href = dataUrl
-    link.download = `map-screenshot-${Date.now()}.png`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const selectedOption = mapStyles.find(s => s.name === selectedStyleName.value)
+    if (selectedOption)
+      map.value.setStyle(selectedOption.style)
   }
 
   // --- Watchers ---
-  // 在 Store 内部监听状态变化，自动执行更新地图的 Action
-  watch(selectedLayerName, updateBaseLayer)
-  watch(showLabels, updateLabelLayer)
-  watch(selectedTerrainName, updateTerrain)
+  watch(selectedStyleName, updateMapStyle)
 
   return {
-    // State
-    viewer,
-    baseLayers,
-    terrainOptions,
-    selectedLayerName,
-    showLabels,
-    selectedTerrainName,
-    // Getters
-    isViewerInitialized,
-    // Actions
-    initViewer,
-    destroyViewer,
-    takeScreenshot, // 暴露截图方法
+    map,
+    isMapInitialized,
+    mapStyles,
+    selectedStyleName,
+    initMap,
+    destroyMap,
   }
 })

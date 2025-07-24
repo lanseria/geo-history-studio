@@ -6,15 +6,15 @@ import { useUiStore } from '~/stores/ui'
 const historyStore = useHistoryStore()
 const uiStore = useUiStore()
 
-const {
-  isLoading,
-  selectedYear,
-  placenamesForYear,
-} = storeToRefs(historyStore)
+// const {
+//   isLoading,
+//   selectedYear,
+//   placenamesForYear,
+// } = storeToRefs(historyStore)
 
 const localYear = ref(selectedYear.value)
 
-const debouncedYear = refDebounced(localYear, 300)
+const debouncedYear = refDebounced(localYear, 100)
 
 watch(debouncedYear, (newYear) => {
   historyStore.selectedYear = newYear
@@ -52,6 +52,7 @@ const displayYear = computed(() => {
           max="1911"
           step="1"
           class="appearance-none accent-brand-primary rounded-lg bg-surface-muted h-2 w-full cursor-pointer"
+          :disabled="isLoading"
         >
       </div>
 
@@ -113,5 +114,10 @@ const displayYear = computed(() => {
 .slide-fade-leave-to {
   transform: translateX(-20px);
   opacity: 0;
+}
+
+input[type='range']:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>
