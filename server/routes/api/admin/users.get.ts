@@ -34,6 +34,7 @@ export default defineEventHandler(async (event) => {
         role: true,
         createdAt: true,
         avatar: true,
+        isLocked: true, // [新增] 返回锁定状态
       },
       offset,
       limit,

@@ -15,6 +15,20 @@
       "when": 1753263214103,
       "tag": "0001_green_shriek",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1753317774228,
+      "tag": "0002_kind_echo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1753318022474,
+      "tag": "0003_jittery_madripoor",
+      "breakpoints": true
     }
   ]
 }
