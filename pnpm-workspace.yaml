@@ -45,3 +45,5 @@ onlyBuiltDependencies:
   - '@parcel/watcher'
   - esbuild
   - unrs-resolver
+catalog:
+  csv-parse: ^6.1.0

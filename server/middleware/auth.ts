@@ -8,7 +8,7 @@ const PUBLIC_API_ROUTES = [
   '/api/auth/login',
   '/api/auth/refresh',
   '/api/auth/logout',
-  '/api/dev/init-admin',
+  '/api/dev',
 ]
 
 export default defineEventHandler(async (event) => {

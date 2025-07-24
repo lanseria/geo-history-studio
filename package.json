@@ -34,6 +34,7 @@
     "bignumber.js": "catalog:utils",
     "cesium": "catalog:frontend",
     "cpx": "catalog:dev",
+    "csv-parse": "catalog:",
     "dayjs-nuxt": "catalog:utils",
     "drizzle-kit": "catalog:backend",
     "drizzle-orm": "catalog:backend",

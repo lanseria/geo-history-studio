@@ -9,3 +9,4 @@ dist
 public/assets/fonts
 public/cesium
 ai/project_context.txt
+migration/old_placenames.csv
