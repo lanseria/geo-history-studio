@@ -1,11 +1,16 @@
 // app/stores/history.ts
 import type { Feature, FeatureCollection, Point } from 'geojson'
-import type { GeoJSONSource, Map } from 'maplibre-gl'
+import type { GeoJSONSource } from 'maplibre-gl'
 import type { placenames } from '~~/server/database/schemas'
 import { defineStore, storeToRefs } from 'pinia'
 
 // 定义前端使用的地名类型
 type Placename = typeof placenames.$inferSelect
+
+// [修改] 将 ID 定义为模块级别的导出常量，供其他组件或 store 使用
+export const HISTORICAL_PLACENAMES_SOURCE_ID = 'historical-placenames-by-year'
+export const HISTORICAL_PLACENAMES_LAYER_ID = 'placenames-by-year-layer'
+export const HISTORICAL_PLACENAMES_LABEL_LAYER_ID = 'placenames-by-year-label-layer'
 
 export const useHistoryStore = defineStore('history', () => {
   const viewerStore = useViewerStore()
@@ -15,9 +20,6 @@ export const useHistoryStore = defineStore('history', () => {
   const placenamesForYear = ref<Placename[]>([])
   const isLoading = ref(false)
   const selectedYear = ref(-221) // 默认年份为-221
-
-  const mapSourceId = 'historical-placenames-by-year'
-  const mapLayerId = 'placenames-by-year-layer'
 
   // --- Private Helper Actions ---
 
@@ -35,29 +37,34 @@ export const useHistoryStore = defineStore('history', () => {
     }))
     return { type: 'FeatureCollection', features }
   }
-
   /**
    * 初始化或更新地图上的数据源和图层
    */
   function _updateMapDataSource() {
     if (!map.value)
       return
-    const source = map.value.getSource(mapSourceId) as GeoJSONSource | undefined
+
+    const source = map.value.getSource(HISTORICAL_PLACENAMES_SOURCE_ID) as GeoJSONSource | undefined
     const geojsonData = _toGeoJSON(placenamesForYear.value)
 
     if (source) {
-      // 如果数据源已存在，仅更新数据
       source.setData(geojsonData)
     }
     else {
-      // 否则，添加新的数据源和图层
-      map.value.addSource(mapSourceId, {
+      // 1. 添加数据源
+      map.value.addSource(HISTORICAL_PLACENAMES_SOURCE_ID, {
         type: 'geojson',
         data: geojsonData,
+        // [新增] 开启 cluster 以便处理大量数据点（可选但推荐）
+        // cluster: true,
+        // clusterMaxZoom: 14,
+        // clusterRadius: 50,
       })
+
+      // 2. 添加圆点图层 (circle)
       map.value.addLayer({
-        id: mapLayerId,
-        source: mapSourceId,
+        id: HISTORICAL_PLACENAMES_LAYER_ID,
+        source: HISTORICAL_PLACENAMES_SOURCE_ID,
         type: 'circle',
         paint: {
           'circle-radius': [
@@ -85,7 +92,43 @@ export const useHistoryStore = defineStore('history', () => {
           'circle-stroke-color': '#FFFFFF',
         },
       })
+
+      // 3. [核心修改] 添加文本标签图层 (symbol)
+      map.value.addLayer({
+        id: HISTORICAL_PLACENAMES_LABEL_LAYER_ID,
+        source: HISTORICAL_PLACENAMES_SOURCE_ID,
+        type: 'symbol',
+        // [关键] 设置最小缩放级别，当地图缩放级别大于等于 7 时才显示标签
+        minzoom: 7,
+        layout: {
+          // 从 GeoJSON 的 properties.name 字段获取文本内容
+          'text-field': ['get', 'name'],
+          'text-font': ['Noto Sans Regular'],
+          // 字体大小
+          'text-size': 12,
+          // 文本相对于锚点（圆点中心）的偏移量，[x, y]
+          // 这里我们将文本向上偏移，避免遮挡圆点
+          'text-offset': [0, -1.5],
+          // 防止标签重叠
+          'text-allow-overlap': false,
+          'text-ignore-placement': false,
+        },
+        paint: {
+          // 文本颜色
+          'text-color': '#000000',
+          // 为文本添加白色描边（光晕），使其在复杂背景下更易读
+          'text-halo-color': '#FFFFFF',
+          'text-halo-width': 1,
+          'text-halo-blur': 1,
+        },
+      })
     }
+
+    // 每次数据更新后，清除两个图层上可能存在的旧过滤器
+    if (map.value.getLayer(HISTORICAL_PLACENAMES_LAYER_ID))
+      map.value.setFilter(HISTORICAL_PLACENAMES_LAYER_ID, null)
+    if (map.value.getLayer(HISTORICAL_PLACENAMES_LABEL_LAYER_ID))
+      map.value.setFilter(HISTORICAL_PLACENAMES_LABEL_LAYER_ID, null)
   }
 
   // --- Public Actions ---
@@ -130,19 +173,24 @@ export const useHistoryStore = defineStore('history', () => {
   function cleanupMapLayers() {
     if (!map.value)
       return
-    if (map.value.getLayer(mapLayerId))
-      map.value.removeLayer(mapLayerId)
-    if (map.value.getSource(mapSourceId))
-      map.value.removeSource(mapSourceId)
+
+    // [修改] 确保两个图层都被移除
+    if (map.value.getLayer(HISTORICAL_PLACENAMES_LABEL_LAYER_ID))
+      map.value.removeLayer(HISTORICAL_PLACENAMES_LABEL_LAYER_ID)
+    if (map.value.getLayer(HISTORICAL_PLACENAMES_LAYER_ID))
+      map.value.removeLayer(HISTORICAL_PLACENAMES_LAYER_ID)
+
+    if (map.value.getSource(HISTORICAL_PLACENAMES_SOURCE_ID))
+      map.value.removeSource(HISTORICAL_PLACENAMES_SOURCE_ID)
   }
 
   // --- Watchers ---
 
-  // 监听年份变化，并自动获取新数据
   watch(selectedYear, (newYear) => {
     fetchPlacenamesForYear(newYear)
-  }, { immediate: true }) // immediate: true 确保在初始化时就用默认年份获取数据
+  }, { immediate: true })
 
+  // [修改] 不再从 return 中导出 mapLayerId
   return {
     isLoading,
     selectedYear,

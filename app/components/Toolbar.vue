@@ -5,7 +5,7 @@ const uiStore = useUiStore()
 </script>
 
 <template>
-  <div class="card p-2 flex flex-col gap-2 left-4 top-4 absolute z-10">
+  <div class="card p-2 flex flex-col gap-2 left-2 top-2 absolute z-10">
     <button
       class="text-xl icon-btn"
       title="图层控制"
