@@ -59,7 +59,6 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2025-06-25',
-
   nitro: {
     esbuild: {
       options: {
@@ -69,6 +68,11 @@ export default defineNuxtConfig({
     experimental: {
       database: true,
       tasks: true,
+    },
+  },
+  vite: {
+    optimizeDeps: {
+      include: ['@vue/devtools-core', '@vue/devtools-kit', 'dayjs', 'dayjs/plugin/updateLocale', 'dayjs/plugin/relativeTime', 'dayjs/plugin/utc', 'cesium'],
     },
   },
 

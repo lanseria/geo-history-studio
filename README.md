@@ -19,3 +19,8 @@
 - 明/暗主题切换
 - 容器化部署支持 (Dockerfile)
 - 类型安全的全栈开发体验
+
+## 快速开始
+
+docker build -t vhiklanseria/geo-history-studio:latest .
+docker push vhiklanseria/geo-history-studio:latest
