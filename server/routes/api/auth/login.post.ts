@@ -28,6 +28,14 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // 检查用户是否被锁定
+  if (user.isLocked) {
+    throw createError({
+      statusCode: 403, // 403 Forbidden 更符合语义
+      statusMessage: '您的账户已被锁定，请联系管理员。',
+    })
+  }
+
   const userPayload: UserPayload = {
     id: user.id,
     username: user.username,
@@ -43,7 +51,6 @@ export default defineEventHandler(async (event) => {
   if (!localKey || !refreshPrivateKey)
     throw new Error('Server not initialized: keys are missing.')
 
-  // --- [核心修改] ---
   const accessTokenExp = dayjs().add(1, 'day').toDate() // access token 1天过期
   const refreshTokenExp = dayjs().add(7, 'day').toDate() // refresh token 7天过期
 

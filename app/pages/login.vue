@@ -2,10 +2,6 @@
 <script setup lang="ts">
 import { appName } from '~/constants'
 
-definePageMeta({
-  layout: 'blank', // 使用一个空白布局
-})
-
 useHead({
   title: `登录 - ${appName}`,
 })
