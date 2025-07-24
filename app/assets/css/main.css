@@ -1,53 +1,56 @@
-/* 定义一些基础变量和全局样式 */
-
-/* 1. Light Mode (默认) */
+/* 1. Light Mode (默认) - Vibrant Indigo Theme */
 :root {
-  /* [修改] 品牌色从 Teal 更换为 Slate Blue */
-  --color-brand-primary: #475569; /* slate-600 */
-  --color-brand-secondary: #1e293b; /* slate-800 */
+  /* 品牌色 - 充满活力的靛蓝 */
+  --color-brand-primary: #4f46e5;   /* indigo-600 */
+  --color-brand-secondary: #3730a3; /* indigo-800 */
   
-  /* 文本颜色 */
-  --color-prose-base: #374151; /* gray-700 */
-  --color-prose-muted: #6b7280; /* gray-500 */
-  /* 背景/表面颜色 */
-  --color-surface-base: #f8fafc; /* slate-50 */
-  --color-surface-muted: #ffffff; /* white */
+  /* 文本颜色 - 使用更柔和的 slate 灰色系 */
+  --color-prose-base: #334155;      /* slate-700 */
+  --color-prose-muted: #64748b;     /* slate-500 */
+
+  /* 背景/表面颜色 - 干净、清晰的层次 */
+  --color-surface-base: #f8fafc;    /* slate-50 */
+  --color-surface-muted: #ffffff;   /* white */
+
   /* 边框颜色 */
-  --color-border-base: #e2e8f0; /* slate-200 */
+  --color-border-base: #e2e8f0;     /* slate-200 */
 }
 
-/* 2. Dark Mode */
+/* 2. Dark Mode - Deep Space Indigo Theme */
 html.dark {
-  /* [修改] 品牌色从 Teal 更换为 Slate Blue */
-  --color-brand-primary: #64748b; /* slate-500 */
-  --color-brand-secondary: #cbd5e1; /* slate-300 */
+  /* 品牌色 - 在深色背景中明亮而突出 */
+  --color-brand-primary: #818cf8;   /* indigo-400 */
+  --color-brand-secondary: #a5b4fc; /* indigo-300 */
 
   /* 文本颜色 */
-  --color-prose-base: #d1d5db; /* gray-300 */
-  --color-prose-muted: #9ca3af; /* gray-400 */
-  /* 背景/表面颜色 */
-  --color-surface-base: #1e293b; /* slate-800 */
-  --color-surface-muted: #334155; /* slate-700 */
+  --color-prose-base: #cbd5e1;      /* slate-300 */
+  --color-prose-muted: #94a3b8;     /* slate-400 */
+
+  /* 背景/表面颜色 - 深邃的 slate 背景，富有层次感 */
+  --color-surface-base: #0f172a;    /* slate-900 */
+  --color-surface-muted: #1e293b;   /* slate-800 */
+
   /* 边框颜色 */
-  --color-border-base: #475569; /* slate-600 */
+  --color-border-base: #334155;     /* slate-700 */
 }
 
-/* 3. Sepia Mode */
+/* 3. Sepia Mode - Warm Amber Theme */
 html.sepia {
-  /* [修改] 品牌色从自定义棕色更换为更和谐的暖棕色 */
-  --color-brand-primary: #855a2c; /* warm brown */
-  --color-brand-secondary: #504231;
+  /* 品牌色 - 温暖、复古的琥珀色 */
+  --color-brand-primary: #d97706;   /* amber-600 */
+  --color-brand-secondary: #92400e; /* amber-800 */
 
   /* 文本颜色 */
-  --color-prose-base: #433422;
-  --color-prose-muted: #715d45;
-  /* 背景/表面颜色 */
-  --color-surface-base: #f1e7d0;
-  --color-surface-muted: #eae0c9;
-  /* 边框颜色 */
-  --color-border-base: #ded0bf;
-}
+  --color-prose-base: #44403c;      /* stone-700 */
+  --color-prose-muted: #78716c;     /* stone-500 */
 
+  /* 背景/表面颜色 - 仿羊皮纸的暖色调 */
+  --color-surface-base: #f5f5f4;    /* stone-100 */
+  --color-surface-muted: #e7e5e4;   /* stone-200 */
+
+  /* 边框颜色 */
+  --color-border-base: #d6d3d1;     /* stone-300 */
+}
 /* 美化滚动条 (保持不变) */
 ::-webkit-scrollbar {
   width: 8px;

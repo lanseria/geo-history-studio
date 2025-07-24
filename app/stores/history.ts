@@ -1,55 +1,40 @@
+import type { placenames as Placename } from '~~/server/database/schemas'
+// app/stores/history.ts
 import * as Cesium from 'cesium'
 import { defineStore } from 'pinia'
 import { useViewerStore } from './viewer'
 
-export interface Placename {
-  id: string
-  name: string
-  tName: string
-  pName: string
-  coord: [string, string]
-  time: [string, string]
-  type: string
+// 定义地名类型到样式的映射
+// 这样我们就可以轻松地为不同类型的地标配置不同的颜色
+const PLACENAME_TYPE_STYLES: Record<string, { color: Cesium.Color }> = {
+  首都: { color: Cesium.Color.fromCssColorString('#F94144') }, // 红色
+  省会: { color: Cesium.Color.fromCssColorString('#F3722C') }, // 橙色
+  州: { color: Cesium.Color.fromCssColorString('#F9C74F') }, // 黄色
+  县: { color: Cesium.Color.fromCssColorString('#90BE6D') }, // 绿色
+  default: { color: Cesium.Color.fromCssColorString('#43AA8B') }, // 默认蓝绿色
 }
 
 export const useHistoryStore = defineStore('history', () => {
   // --- State ---
-  const allPlacenames = ref<Placename[]>([])
+  const placenamesForYear = ref<Placename.$inferSelect[]>([])
   const isLoading = ref(false)
-  const searchTerm = ref('')
-  const selectedType = ref('全部')
-
-  // --- 【核心修改 ①】: 将 state 的类型从 EntityCollection 改为 CustomDataSource ---
-  // 我们需要保存对整个数据源的引用，而不是仅仅是实体的集合。
+  const selectedYear = ref(-221)
   const placenameDataSource = shallowRef<Cesium.CustomDataSource | null>(null)
 
-  // --- Getters ---
-  const uniqueTypes = computed(() => {
-    const types = new Set(allPlacenames.value.map(p => p.type))
-    return ['全部', ...Array.from(types)]
-  })
-
-  const filteredPlacenames = computed(() => {
-    return allPlacenames.value.filter((placename) => {
-      const nameMatch = placename.name.toLowerCase().includes(searchTerm.value.toLowerCase())
-      const typeMatch = selectedType.value === '全部' || placename.type === selectedType.value
-      return nameMatch && typeMatch
-    })
-  })
   // --- Actions ---
-  async function fetchPlacenames() {
-    if (allPlacenames.value.length > 0)
-      return
+  async function fetchPlacenamesByYear(year: number) {
     isLoading.value = true
     try {
-      const response = await fetch('/json/data.json')
-      if (!response.ok)
-        throw new Error('Network response was not ok.')
-      const data = await response.json()
-      allPlacenames.value = data.data
+      const data = await $fetch('/api/placenames/by-year', {
+        params: { year },
+      })
+      placenamesForYear.value = data
+      // 数据获取后立即重新渲染
+      renderPlacenamesOnMap()
     }
     catch (error) {
-      console.error('Failed to fetch placenames:', error)
+      console.error(`Failed to fetch placenames for year ${year}:`, error)
+      placenamesForYear.value = []
     }
     finally {
       isLoading.value = false
@@ -58,10 +43,8 @@ export const useHistoryStore = defineStore('history', () => {
 
   function clearPlacenamesFromMap() {
     const viewerStore = useViewerStore()
-    // 检查 placenameDataSource.value 是否存在，如果存在就移除它
     if (viewerStore.viewer && placenameDataSource.value) {
-      // 正确的做法：移除整个 DataSource
-      viewerStore.viewer.dataSources.remove(placenameDataSource.value)
+      viewerStore.viewer.dataSources.remove(placenameDataSource.value, true) // true to destroy
     }
     placenameDataSource.value = null
   }
@@ -73,33 +56,37 @@ export const useHistoryStore = defineStore('history', () => {
 
     clearPlacenamesFromMap()
 
-    const newDataSource = new Cesium.CustomDataSource('historical-placenames')
+    const newDataSource = new Cesium.CustomDataSource(`placenames-${selectedYear.value}`)
 
-    for (const placename of filteredPlacenames.value) {
+    for (const placename of placenamesForYear.value) {
+      const style = PLACENAME_TYPE_STYLES[placename.type] || PLACENAME_TYPE_STYLES.default
+
       newDataSource.entities.add({
-        id: placename.id,
+        id: `placename-${placename.id}`,
         position: Cesium.Cartesian3.fromDegrees(
-          Number(placename.coord[0]),
-          Number(placename.coord[1]),
+          Number(placename.coordinates[0]),
+          Number(placename.coordinates[1]),
         ),
         point: {
-          pixelSize: 8,
-          color: Cesium.Color.ORANGE,
+          pixelSize: 10,
+          color: style.color,
           outlineColor: Cesium.Color.WHITE,
           outlineWidth: 2,
-          // 【核心修复 ①】: 告诉点实体，要贴在地形上
           heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
         },
         label: {
           text: placename.name,
           font: '16px "DM Sans"',
-          fillColor: Cesium.Color.WHITE,
+          fillColor: style.color,
           outlineColor: Cesium.Color.BLACK,
-          outlineWidth: 2,
+          outlineWidth: 3,
           style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          pixelOffset: new Cesium.Cartesian2(0, -20),
+          pixelOffset: new Cesium.Cartesian2(0, -24),
           heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY, // 标签永不被遮挡
         },
+        // 将地名数据附加到实体上，方便将来进行交互
+        properties: placename,
       })
     }
 
@@ -107,39 +94,43 @@ export const useHistoryStore = defineStore('history', () => {
     placenameDataSource.value = newDataSource
   }
 
-  function flyToPlacename(placename: Placename) {
+  function flyToPlacename(placename: Placename.$inferSelect) {
     const viewerStore = useViewerStore()
     if (!viewerStore.isViewerInitialized)
       return
 
     viewerStore.viewer!.camera.flyTo({
       destination: Cesium.Cartesian3.fromDegrees(
-        Number(placename.coord[0]),
-        Number(placename.coord[1]),
+        Number(placename.coordinates[0]),
+        Number(placename.coordinates[1]),
         50000,
       ),
-      orientation: {
-        heading: Cesium.Math.toRadians(0.0),
-        pitch: Cesium.Math.toRadians(-90),
-        roll: 0.0,
-      },
       duration: 1.5,
     })
   }
 
-  // watch
-  watch(filteredPlacenames, renderPlacenamesOnMap, { deep: true })
+  // --- Watchers ---
+  // 当 selectedYear 变化时，自动获取新数据
+  // 使用 { immediate: true } 确保组件加载时会立即执行一次
+  watch(selectedYear, (newYear) => {
+    fetchPlacenamesByYear(newYear)
+  }, { immediate: true }) // 这里的 immediate: true 确保了应用加载后会立即获取 -221 年的数据
+
+  // 监听 viewer 初始化，成功后渲染一次
+  const viewerStore = useViewerStore()
+  watch(() => viewerStore.isViewerInitialized, (isInitialized) => {
+    if (isInitialized) {
+      renderPlacenamesOnMap()
+    }
+  })
 
   return {
     // State
     isLoading,
-    searchTerm,
-    selectedType,
-    // Getters
-    uniqueTypes,
-    filteredPlacenames,
+    selectedYear,
+    placenamesForYear,
     // Actions
-    fetchPlacenames,
+    fetchPlacenamesByYear,
     flyToPlacename,
   }
 })
