@@ -1,26 +1,33 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useHistoryStore } from '~/stores/history'
-import { useUiStore } from '~/stores/ui'
+import { useUiStore } from '~/stores/ui' // 假设您希望这个面板能被 Toolbar 控制
 
 const historyStore = useHistoryStore()
 const uiStore = useUiStore()
 
-// const {
-//   isLoading,
-//   selectedYear,
-//   placenamesForYear,
-// } = storeToRefs(historyStore)
+// 从 store 中获取响应式状态
+const {
+  isLoading,
+  selectedYear,
+  placenamesForYear,
+} = storeToRefs(historyStore)
 
+// 使用一个本地 ref 和防抖来更新年份，避免在拖动滑块时频繁请求 API
 const localYear = ref(selectedYear.value)
+const debouncedYear = refDebounced(localYear, 300) // 300ms 防抖
 
-const debouncedYear = refDebounced(localYear, 100)
-
+// 当防抖后的年份变化时，才更新 store 中的 selectedYear
 watch(debouncedYear, (newYear) => {
   historyStore.selectedYear = newYear
 })
 
-// 将公元前年份显示为 "公元前 XXX"
+// 组件卸载时，清理地图上添加的图层和数据源
+onUnmounted(() => {
+  historyStore.cleanupMapLayers()
+})
+
+// 计算属性，用于友好地显示年份
 const displayYear = computed(() => {
   if (localYear.value < 0)
     return `公元前 ${-localYear.value} 年`
@@ -29,16 +36,14 @@ const displayYear = computed(() => {
 </script>
 
 <template>
+  <!-- 您可以决定这个面板是否由 uiStore 控制显隐 -->
   <Transition name="slide-fade">
-    <div
-      v-if="uiStore.isFilterPanelOpen"
-      class="card p-4 flex flex-col gap-4 h-[calc(100vh-3rem)] w-80 left-20 top-4 absolute z-10"
-    >
+    <div v-if="uiStore.isFilterPanelOpen" class="card p-4 flex flex-col gap-4 h-[calc(100vh-3rem)] w-80 left-20 top-4 absolute z-10">
       <h2 class="text-xl font-bold pb-2 border-b border-border-base">
         按年份检索
       </h2>
 
-      <!-- Year Slider -->
+      <!-- 年份滑块 -->
       <div class="flex flex-col gap-2">
         <div class="flex items-center justify-between">
           <label for="year-slider" class="text-prose-muted font-bold">选择年份</label>
@@ -56,7 +61,7 @@ const displayYear = computed(() => {
         >
       </div>
 
-      <!-- Results List -->
+      <!-- 结果列表 -->
       <div class="pr-2 flex-1 overflow-y-auto">
         <div v-if="isLoading" class="text-prose-muted p-4 text-center">
           <div class="i-carbon-circle-dash text-2xl mx-auto animate-spin" />
@@ -93,7 +98,7 @@ const displayYear = computed(() => {
 </template>
 
 <style scoped>
-/* Custom scrollbar */
+/* 自定义滚动条 */
 .overflow-y-auto::-webkit-scrollbar {
   width: 6px;
 }
@@ -105,7 +110,7 @@ const displayYear = computed(() => {
   border-radius: 10px;
 }
 
-/* Slide transition */
+/* 侧滑过渡效果 */
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: all 0.3s ease-out;
