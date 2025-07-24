@@ -35,9 +35,11 @@ export const useViewerStore = defineStore('viewer', () => {
   const currentBaseLayer = shallowRef<Cesium.ImageryLayer | null>(null)
   const currentLabelLayer = shallowRef<Cesium.ImageryLayer | null>(null)
 
-  // --- 静态配置数据 ---
-  const tdtKey = '8c1768e11fec4006319e69e4a2a58793'
-  Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkMDc3MzE1MC1lZWMwLTQzNWEtYTVhZS0yZTllNDA4M2U2YjciLCJpZCI6MTE2MDc4LCJpYXQiOjE2NjkzNjU5NDN9.Wo46xHPOIeZR6EQLJ7bstGKVHeTUyzYi2cPapU8-tOs'
+  // useRuntimeConfig 必须在 setup 函数、插件或 store 的顶层作用域中调用
+  const config = useRuntimeConfig()
+  const tdtKey = config.public.tdtKey
+  // 设置 Cesium Ion 的默认 Token
+  Cesium.Ion.defaultAccessToken = config.public.cesiumIonToken
 
   const baseLayers: ImageryLayerOption[] = [
     { name: '天地图影像', type: 'Tianditu', url: `https://t0.tianditu.gov.cn/img_w/wmts?tk=${tdtKey}`, layer: 'img' },

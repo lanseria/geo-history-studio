@@ -46,6 +46,11 @@ export default defineNuxtConfig({
       password: '',
       db: 4,
     },
+    // public 部分的配置将暴露给客户端和服务器端
+    public: {
+      tdtKey: '',
+      cesiumIonToken: '',
+    },
   },
 
   future: {
