@@ -10,8 +10,7 @@ export default defineNitroPlugin(() => {
     host: config.redis.host,
     port: 6379,
     password: config.redis.password,
-    db: 0,
-    // 其他 redis 连接器选项
+    db: config.redis.db,
   })
 
   // 挂载驱动

@@ -97,8 +97,8 @@ catalogs:
       specifier: ^2.0.5
       version: 2.0.5
     zod:
-      specifier: ^4.0.5
-      version: 4.0.5
+      specifier: ^4.0.8
+      version: 4.0.8
 
 overrides:
   '@nuxt/devtools': ^2.6.2
@@ -203,7 +203,7 @@ importers:
         version: 3.0.3(typescript@5.8.3)
       zod:
         specifier: catalog:utils
-        version: 4.0.5
+        version: 4.0.8
 
 packages:
 
@@ -6379,8 +6379,8 @@ packages:
   zod@3.25.47:
     resolution: {integrity: sha512-+f8+agSYoT9niC0VUL60IuXnr81FJeJ27Lf5YPrmcxTWmygcpGBeEuAAovDDEjkyQ36KyqNswwbhISZ1Z7yY+A==}
 
-  zod@4.0.5:
-    resolution: {integrity: sha512-/5UuuRPStvHXu7RS+gmvRf4NXrNxpSllGwDnCBcJZtQsKrviYXm54yDGV2KYNLT5kq0lHGcl7lqWJLgSaG+tgA==}
+  zod@4.0.8:
+    resolution: {integrity: sha512-+MSh9cZU9r3QKlHqrgHMTSr3QwMGv4PLfR0M4N/sYWV5/x67HgXEhIGObdBkpnX8G78pTgWnIrBL2lZcNJOtfg==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -13321,6 +13321,6 @@ snapshots:
 
   zod@3.25.47: {}
 
-  zod@4.0.5: {}
+  zod@4.0.8: {}
 
   zwitch@2.0.4: {}
