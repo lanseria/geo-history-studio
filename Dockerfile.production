@@ -8,11 +8,10 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
 
 WORKDIR /app
 
-# [核心修改] 直接从构建上下文复制 .output 目录
 # 这个 .output 目录将由 GitHub Actions 传输过来
 COPY .output ./.output
 
 EXPOSE 3000
 
-# [优化] 为了能找到 node，直接使用绝对路径或确保在 PATH 中
+# 为了能找到 node，直接使用绝对路径或确保在 PATH 中
 CMD ["node", ".output/server/index.mjs"]

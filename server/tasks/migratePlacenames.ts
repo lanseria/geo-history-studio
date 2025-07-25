@@ -26,7 +26,7 @@ interface NewPlacename {
   type: string
 }
 
-// [新增] 分块函数
+// 分块函数
 function chunkArray<T>(array: T[], size: number): T[][] {
   const chunks: T[][] = []
   for (let i = 0; i < array.length; i += size)

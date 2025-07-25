@@ -4,7 +4,6 @@
 
 <template>
   <div class="h-full w-full relative">
-    <!-- [修改] 引用新的 MapViewer 组件 -->
     <MapViewer />
 
     <Toolbar />

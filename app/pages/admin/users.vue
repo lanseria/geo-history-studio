@@ -40,7 +40,7 @@ async function handleAddUserSuccess() {
   await refresh()
 }
 
-// [新增] 锁定/解锁用户
+// 锁定/解锁用户
 async function toggleLock(userId: number) {
   try {
     await $fetch(`/api/admin/users/${userId}`, { method: 'PATCH' })
@@ -51,7 +51,7 @@ async function toggleLock(userId: number) {
   }
 }
 
-// [新增] 删除用户
+// 删除用户
 async function deleteUser(userId: number, username: string) {
   if (!confirm(`确定要删除用户 "${username}" 吗？此操作不可恢复。`))
     return
@@ -76,7 +76,7 @@ async function deleteUser(userId: number, username: string) {
       <h2 class="text-2xl font-bold">
         用户列表
       </h2>
-      <!-- [新增] 新增用户按钮 -->
+      <!-- 新增用户按钮 -->
       <button class="btn flex items-center" @click="isAddUserModalOpen = true">
         <div i-carbon-add class="mr-1" />
         新增用户

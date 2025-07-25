@@ -26,7 +26,7 @@ const { areAnnotationsVisible } = storeToRefs(viewerStore)
         </select>
       </div>
 
-      <!-- [新增] 叠加层控制 -->
+      <!-- 叠加层控制 -->
       <div class="pt-3 border-t border-border-base flex flex-col gap-3">
         <label class="text-prose-muted font-bold">叠加层</label>
         <!-- 注记开关 -->

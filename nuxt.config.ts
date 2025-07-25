@@ -29,7 +29,6 @@ export default defineNuxtConfig({
       ],
     },
   },
-  // [新增] 引入全局 CSS 文件
   css: [
     '~/assets/css/main.css',
   ],

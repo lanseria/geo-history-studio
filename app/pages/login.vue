@@ -9,17 +9,17 @@ useHead({
 const authStore = useAuthStore()
 const credentials = reactive({ username: '', password: '' })
 const isLoading = ref(false)
-const errorMessage = ref('') // [新增] 用于存储错误信息
+const errorMessage = ref('') // 用于存储错误信息
 
 async function handleLogin() {
   isLoading.value = true
-  errorMessage.value = '' // [修改] 开始登录前清空错误信息
+  errorMessage.value = '' // 开始登录前清空错误信息
   try {
     await authStore.login(credentials)
     // 成功后，全局中间件会自动处理跳转
   }
   catch (error: any) {
-    // [修改] 将 alert 替换为设置错误信息
+    // 将 alert 替换为设置错误信息
     errorMessage.value = error.data?.statusMessage || '登录时发生未知错误，请重试。'
   }
   finally {

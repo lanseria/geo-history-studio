@@ -41,7 +41,7 @@ watch(debouncedYear, (newYear) => {
 })
 
 watch(debouncedSearchQuery, (query) => {
-  // [修改] 检查两个图层是否存在
+  // 检查两个图层是否存在
   if (!map.value || !map.value.getLayer(HISTORICAL_PLACENAMES_LAYER_ID) || !map.value.getLayer(HISTORICAL_PLACENAMES_LABEL_LAYER_ID))
     return
 
@@ -52,7 +52,7 @@ watch(debouncedSearchQuery, (query) => {
     filter = ['in', ['get', 'name'] as any, ...namesToShow]
   }
 
-  // [修改] 为两个图层同时设置过滤器
+  // 为两个图层同时设置过滤器
   map.value.setFilter(HISTORICAL_PLACENAMES_LAYER_ID, filter)
   map.value.setFilter(HISTORICAL_PLACENAMES_LABEL_LAYER_ID, filter)
 })
@@ -83,7 +83,7 @@ onUnmounted(() => {
           <label for="year-slider" class="text-prose-muted font-bold">选择年份</label>
           <span class="text-brand-primary font-mono font-semibold">{{ displayYear }}</span>
         </div>
-        <!-- [修改] 简化 input 的 class，将样式移至 <style> 块中 -->
+        <!-- 简化 input 的 class，将样式移至 <style> 块中 -->
         <input
           id="year-slider"
           v-model.number="localYear"
@@ -160,7 +160,7 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-/* [新增] 自定义 range input 样式 */
+/* 自定义 range input 样式 */
 .year-slider {
   -webkit-appearance: none; /* 移除 webkit 的默认样式 */
   appearance: none;

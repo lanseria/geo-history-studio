@@ -20,7 +20,7 @@ export const users = geoHistoryStudioSchema.table('users', {
   role: userRoleEnum('role').notNull().default('user'),
   /** 用户头像URL */
   avatar: text('avatar'),
-  /** [新增] 账户是否被锁定 */
+  /** 账户是否被锁定 */
   isLocked: boolean('is_locked').notNull().default(false),
   /** 用户创建时间 */
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),

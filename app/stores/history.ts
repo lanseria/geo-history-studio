@@ -7,7 +7,7 @@ import { defineStore, storeToRefs } from 'pinia'
 // 定义前端使用的地名类型
 type Placename = typeof placenames.$inferSelect
 
-// [修改] 将 ID 定义为模块级别的导出常量，供其他组件或 store 使用
+// 将 ID 定义为模块级别的导出常量，供其他组件或 store 使用
 export const HISTORICAL_PLACENAMES_SOURCE_ID = 'historical-placenames-by-year'
 export const HISTORICAL_PLACENAMES_LAYER_ID = 'placenames-by-year-layer'
 export const HISTORICAL_PLACENAMES_LABEL_LAYER_ID = 'placenames-by-year-label-layer'
@@ -55,7 +55,7 @@ export const useHistoryStore = defineStore('history', () => {
       map.value.addSource(HISTORICAL_PLACENAMES_SOURCE_ID, {
         type: 'geojson',
         data: geojsonData,
-        // [新增] 开启 cluster 以便处理大量数据点（可选但推荐）
+        // 开启 cluster 以便处理大量数据点（可选但推荐）
         // cluster: true,
         // clusterMaxZoom: 14,
         // clusterRadius: 50,
@@ -93,12 +93,12 @@ export const useHistoryStore = defineStore('history', () => {
         },
       })
 
-      // 3. [核心修改] 添加文本标签图层 (symbol)
+      // 3. 添加文本标签图层 (symbol)
       map.value.addLayer({
         id: HISTORICAL_PLACENAMES_LABEL_LAYER_ID,
         source: HISTORICAL_PLACENAMES_SOURCE_ID,
         type: 'symbol',
-        // [关键] 设置最小缩放级别，当地图缩放级别大于等于 7 时才显示标签
+        // 设置最小缩放级别，当地图缩放级别大于等于 7 时才显示标签
         minzoom: 7,
         layout: {
           // 从 GeoJSON 的 properties.name 字段获取文本内容
@@ -174,7 +174,7 @@ export const useHistoryStore = defineStore('history', () => {
     if (!map.value)
       return
 
-    // [修改] 确保两个图层都被移除
+    // 确保两个图层都被移除
     if (map.value.getLayer(HISTORICAL_PLACENAMES_LABEL_LAYER_ID))
       map.value.removeLayer(HISTORICAL_PLACENAMES_LABEL_LAYER_ID)
     if (map.value.getLayer(HISTORICAL_PLACENAMES_LAYER_ID))
@@ -190,7 +190,6 @@ export const useHistoryStore = defineStore('history', () => {
     fetchPlacenamesForYear(newYear)
   }, { immediate: true })
 
-  // [修改] 不再从 return 中导出 mapLayerId
   return {
     isLoading,
     selectedYear,

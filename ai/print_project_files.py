@@ -29,7 +29,7 @@ def get_project_structure(root_dir, file_regex, exclude_dirs=None, output_file=N
     output_lines = []
 
     for root, dirs, files in os.walk(root_dir, topdown=True):
-        # --- 核心优化：原地修改dirs列表，阻止os.walk进入排除的目录 ---
+        # --- 原地修改dirs列表，阻止os.walk进入排除的目录 ---
         
         # 原始的 dirs[:] = [d for d in dirs if d not in exclude_set] 只能排除顶级目录
         # 我们需要更强大的排除逻辑

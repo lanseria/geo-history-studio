@@ -5,7 +5,6 @@ import zxcvbn from 'zxcvbn'
 import { users } from '~~/server/database/schemas'
 import { getUserFromEvent, hashPassword } from '~~/server/utils/auth'
 
-// [核心修改] 更新 Zod schema 以包含密码强度检查
 const changePasswordSchema = z.object({
   oldPassword: z.string(),
   newPassword: z.string().min(6, '新密码至少需要6位'),
@@ -15,7 +14,7 @@ const changePasswordSchema = z.object({
     message: '两次输入的新密码不一致',
     path: ['confirmPassword'],
   })
-  // [新增] 链式调用 refine 来检查密码强度
+  // 链式调用 refine 来检查密码强度
   .refine((data) => {
     const strength = zxcvbn(data.newPassword)
     // 要求密码强度分数至少为 3 (good)

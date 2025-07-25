@@ -1,7 +1,6 @@
 // app/composables/useAuthStore.ts
 import type { UserPayload } from '~~/server/utils/auth'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-// [移除] apiFetch 不再需要从这里导入，因为它现在是全局的
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserPayload | null>(null)
@@ -9,7 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!user.value)
   const isAdmin = computed(() => user.value?.role === 'admin')
 
-  // [新增] 计算属性，用于获取用户头像，如果不存在则返回默认头像
+  // 计算属性，用于获取用户头像，如果不存在则返回默认头像
   const userAvatar = computed(() => {
     // 如果用户存在且 avatar 字段非空，则使用该 URL
     if (user.value?.avatar)
@@ -62,7 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
       console.error('Error during logout:', e)
     }
     finally {
-      // [核心修改] 使用 client 判断，确保 navigateTo 只在客户端执行
+      // 使用 client 判断，确保 navigateTo 只在客户端执行
       if (import.meta.client) {
         // 使用 replace: true 来避免用户通过后退按钮回到需要认证的页面
         await navigateTo('/login', { replace: true })
