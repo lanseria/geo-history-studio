@@ -1,9 +1,12 @@
+<!-- app/components/FilterPanel.vue -->
 <script setup lang="ts">
 import type { FilterSpecification } from 'maplibre-gl'
 import { storeToRefs } from 'pinia'
-import { HISTORICAL_PLACENAMES_LAYER_ID, useHistoryStore } from '~/stores/history'
+import { HISTORICAL_PLACENAMES_LABEL_LAYER_ID, HISTORICAL_PLACENAMES_LAYER_ID, useHistoryStore } from '~/stores/history'
 import { useUiStore } from '~/stores/ui'
 import { useViewerStore } from '~/stores/viewer'
+// 导入新创建的组件
+import YearSlider from './YearSlider.vue'
 
 const historyStore = useHistoryStore()
 const uiStore = useUiStore()
@@ -11,10 +14,6 @@ const viewerStore = useViewerStore()
 
 const { isLoading, selectedYear, placenamesForYear } = storeToRefs(historyStore)
 const { map } = storeToRefs(viewerStore)
-
-// --- 本地状态 ---
-const localYear = ref(selectedYear.value)
-const debouncedYear = refDebounced(localYear, 300)
 
 const searchQuery = ref('')
 const debouncedSearchQuery = refDebounced(searchQuery, 300)
@@ -29,30 +28,25 @@ const filteredPlacenames = computed(() => {
 })
 
 const displayYear = computed(() => {
-  if (localYear.value < 0)
-    return `公元前 ${-localYear.value} 年`
-  return `${localYear.value} 年`
+  // 直接使用 store 中的 selectedYear 来显示，确保与数据源一致
+  if (selectedYear.value < 0)
+    return `公元前 ${-selectedYear.value} 年`
+  return `${selectedYear.value} 年`
 })
 
 // --- 监听器 ---
-watch(debouncedYear, (newYear) => {
-  historyStore.selectedYear = newYear
-  searchQuery.value = ''
-})
 
 watch(debouncedSearchQuery, (query) => {
-  // 检查两个图层是否存在
   if (!map.value || !map.value.getLayer(HISTORICAL_PLACENAMES_LAYER_ID) || !map.value.getLayer(HISTORICAL_PLACENAMES_LABEL_LAYER_ID))
     return
 
   const trimmedQuery = query.trim().toLowerCase()
-  let filter: FilterSpecification | null = null // 默认为 null (无过滤器)
+  let filter: FilterSpecification | null = null
   if (trimmedQuery) {
     const namesToShow = filteredPlacenames.value.map(p => p.name)
     filter = ['in', ['get', 'name'] as any, ...namesToShow]
   }
 
-  // 为两个图层同时设置过滤器
   map.value.setFilter(HISTORICAL_PLACENAMES_LAYER_ID, filter)
   map.value.setFilter(HISTORICAL_PLACENAMES_LABEL_LAYER_ID, filter)
 })
@@ -81,22 +75,21 @@ onUnmounted(() => {
       <div class="pt-2 border-t border-border-base flex flex-col gap-2">
         <div class="flex items-center justify-between">
           <label for="year-slider" class="text-prose-muted font-bold">选择年份</label>
+          <!-- 直接使用计算属性 displayYear -->
           <span class="text-brand-primary font-mono font-semibold">{{ displayYear }}</span>
         </div>
-        <!-- 简化 input 的 class，将样式移至 <style> 块中 -->
-        <input
+        <!-- 使用新的 YearSlider 组件 -->
+        <YearSlider
           id="year-slider"
-          v-model.number="localYear"
-          type="range"
-          min="-221"
-          max="1911"
-          step="1"
-          class="year-slider w-full cursor-pointer"
+          v-model="selectedYear"
+          :min="-221"
+          :max="1911"
+          :step="1"
           :disabled="isLoading"
-        >
+        />
       </div>
 
-      <!-- 结果列表 (这部分代码保持不变) -->
+      <!-- 结果列表  -->
       <div class="pr-2 flex-1 overflow-y-auto">
         <div v-if="isLoading" class="text-prose-muted p-4 text-center">
           <div class="i-carbon-circle-dash text-2xl mx-auto animate-spin" />
@@ -158,67 +151,5 @@ onUnmounted(() => {
 .slide-fade-leave-to {
   transform: translateX(-20px);
   opacity: 0;
-}
-
-/* 自定义 range input 样式 */
-.year-slider {
-  -webkit-appearance: none; /* 移除 webkit 的默认样式 */
-  appearance: none;
-  width: 100%;
-  height: 8px; /* 轨道高度 */
-  background: transparent; /* input 自身背景透明 */
-  outline: none;
-}
-
-/* 轨道样式 - Webkit (Chrome, Safari) */
-.year-slider::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 8px;
-  cursor: pointer;
-  background-color: var(--color-surface-muted);
-  border-radius: 9999px; /* 圆角轨道 */
-}
-
-/* 滑块按钮样式 - Webkit */
-.year-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: var(--color-brand-primary);
-  cursor: pointer;
-  margin-top: -4px; /* 垂直居中滑块按钮 */
-}
-
-/* 轨道样式 - Firefox */
-.year-slider::-moz-range-track {
-  width: 100%;
-  height: 8px;
-  cursor: pointer;
-  background: var(--color-surface-muted);
-  border-radius: 9999px;
-  border: none;
-}
-
-/* 滑块按钮样式 - Firefox */
-.year-slider::-moz-range-thumb {
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: var(--color-brand-primary);
-  cursor: pointer;
-  border: none;
-}
-
-.year-slider:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-/* 禁用时，滑块按钮和轨道样式也需要调整 */
-.year-slider:disabled::-webkit-slider-thumb {
-  background: var(--color-prose-muted);
-}
-.year-slider:disabled::-moz-range-thumb {
-  background: var(--color-prose-muted);
 }
 </style>
