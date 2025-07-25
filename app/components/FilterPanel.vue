@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import { HISTORICAL_PLACENAMES_LABEL_LAYER_ID, HISTORICAL_PLACENAMES_LAYER_ID, useHistoryStore } from '~/stores/history'
 import { useUiStore } from '~/stores/ui'
 import { useViewerStore } from '~/stores/viewer'
+import TypeFilter from './TypeFilter.vue'
 // 导入新创建的组件
 import YearSlider from './YearSlider.vue'
 
@@ -59,7 +60,7 @@ onUnmounted(() => {
 
 <template>
   <Transition name="slide-fade">
-    <div v-if="uiStore.isFilterPanelOpen" class="card p-4 flex flex-col gap-4 h-[calc(100vh-40rem)] w-80 left-14 top-2 absolute z-10">
+    <div v-if="uiStore.isFilterPanelOpen" class="card p-4 flex flex-col gap-4 h-[calc(100vh-10rem)] w-80 left-14 top-2 absolute z-10">
       <!-- 搜索框 -->
       <div class="relative">
         <div class="i-carbon-search text-lg op-50 pointer-events-none left-3 top-1/2 absolute -translate-y-1/2" />
@@ -89,7 +90,13 @@ onUnmounted(() => {
         />
       </div>
 
-      <!-- 结果列表  -->
+      <!-- 类型筛选器 -->
+      <div class="pt-2 border-t border-border-base">
+        <TypeFilter />
+      </div>
+
+      <!-- 结果列表 (搜索功能现在不直接控制地图，而是筛选列表) -->
+      <!-- 注意: 这部分的功能需要调整，现在它只用于筛选左侧的列表，而不是直接过滤地图 -->
       <div class="pr-2 flex-1 overflow-y-auto">
         <div v-if="isLoading" class="text-prose-muted p-4 text-center">
           <div class="i-carbon-circle-dash text-2xl mx-auto animate-spin" />
