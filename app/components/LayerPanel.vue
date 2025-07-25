@@ -1,3 +1,4 @@
+<!-- app/components/LayerPanel.vue -->
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useUiStore } from '~/stores/ui'
@@ -19,8 +20,10 @@ const { areAnnotationsVisible } = storeToRefs(viewerStore)
       <!-- 底图切换 -->
       <div class="flex flex-col gap-2">
         <label class="text-prose-muted font-bold">地图样式</label>
-        <select v-model="viewerStore.selectedStyleName" class="text-sm input-base !py-1">
-          <option v-for="style in viewerStore.mapStyles" :key="style.name" :value="style.name">
+        <!-- [修改] v-model 绑定到 viewerStore.selectedStyleId -->
+        <select v-model="viewerStore.selectedStyleId" class="text-sm input-base !py-1">
+          <!-- [修改] 遍历 viewerStore.mapStyleOptions -->
+          <option v-for="style in viewerStore.mapStyleOptions" :key="style.id" :value="style.id">
             {{ style.name }}
           </option>
         </select>
@@ -29,7 +32,7 @@ const { areAnnotationsVisible } = storeToRefs(viewerStore)
       <!-- 叠加层控制 -->
       <div class="pt-3 border-t border-border-base flex flex-col gap-3">
         <label class="text-prose-muted font-bold">叠加层</label>
-        <!-- 注记开关 -->
+        <!-- 注记开关 (这部分无需修改) -->
         <div class="flex items-center justify-between">
           <span>显示注记</span>
           <button
@@ -44,14 +47,12 @@ const { areAnnotationsVisible } = storeToRefs(viewerStore)
           </button>
         </div>
       </div>
-
-      <!-- 这里可以为以后添加其他图层控制，如叠加层开关等 -->
     </div>
   </Transition>
 </template>
 
 <style scoped>
-/* Slide transition (保持不变) */
+/* 样式保持不变 */
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: all 0.3s ease-out;
