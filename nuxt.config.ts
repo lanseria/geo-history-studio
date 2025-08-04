@@ -81,6 +81,8 @@ export default defineNuxtConfig({
         'dayjs/plugin/relativeTime',
         'dayjs/plugin/utc',
         'zxcvbn',
+        'maplibre-gl',
+        '@floating-ui/vue',
       ],
     },
   },

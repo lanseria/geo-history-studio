@@ -1,11 +1,10 @@
 packages: []
 
-catalog:
 catalogs:
   backend:
     '@types/pg': ^8.15.5
     drizzle-kit: ^0.31.4
-    drizzle-orm: ^0.44.3
+    drizzle-orm: ^0.44.4
     pg: ^8.16.3
   build:
     '@nuxt/devtools': ^2.6.2
@@ -13,27 +12,28 @@ catalogs:
     '@nuxt/kit': ^4.0.2
     '@nuxtjs/color-mode': ^3.5.2
     '@pinia/nuxt': ^0.11.2
-    '@unocss/eslint-config': ^66.3.3
-    '@unocss/nuxt': ^66.3.3
+    '@unocss/eslint-config': ^66.4.1
+    '@unocss/nuxt': ^66.4.1
     '@vueuse/nuxt': ^13.6.0
     nuxt: ^4.0.2
-    unocss: ^66.3.3
+    unocss: ^66.4.1
     unplugin: ^2.3.5
     vite: ^7.0.6
   dev:
-    '@antfu/eslint-config': ^5.0.0
+    '@antfu/eslint-config': ^5.1.0
     eslint: ^9.32.0
     eslint-plugin-format: ^1.0.1
-    typescript: ^5.8.3
-    vue-tsc: ^3.0.4
+    typescript: ^5.9.2
+    vue-tsc: ^3.0.5
   frontend:
-    '@floating-ui/vue': ^1.1.7
+    '@floating-ui/vue': ^1.1.8
     '@vueuse/core': ^13.6.0
     maplibre-gl: ^5.6.1
     pinia: ^3.0.3
     vue: ^3.5.18
   icons:
     '@iconify-json/carbon': ^1.2.11
+    '@iconify-json/gis': ^1.2.3
     '@iconify-json/twemoji': ^1.2.2
   utils:
     '@types/zxcvbn': ^4.4.5
@@ -42,7 +42,7 @@ catalogs:
     dayjs-nuxt: ^2.1.11
     es-toolkit: ^1.39.8
     paseto-ts: ^2.0.5
-    zod: ^4.0.11
+    zod: ^4.0.14
     zxcvbn: ^4.4.2
 
 onlyBuiltDependencies:

@@ -1,3 +1,4 @@
+<!-- app/components/Toolbar.vue -->
 <script setup lang="ts">
 import { useUiStore } from '~/stores/ui'
 
@@ -21,6 +22,22 @@ const uiStore = useUiStore()
       @click="uiStore.toggleFilterPanel"
     >
       <div i-carbon-filter />
+    </button>
+    <button
+      class="text-xl icon-btn"
+      title="数据与标绘"
+      :class="{ '!text-brand-primary': uiStore.isDataPanelOpen }"
+      @click="uiStore.toggleDataPanel"
+    >
+      <div i-carbon-edit />
+    </button>
+    <button
+      class="text-xl icon-btn"
+      title="视点飞行"
+      :class="{ '!text-brand-primary': uiStore.isFlyToActionEditorOpen }"
+      @click="uiStore.toggleFlyToActionEditor"
+    >
+      <div i-carbon-plane />
     </button>
   </div>
 </template>
