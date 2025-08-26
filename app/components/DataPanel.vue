@@ -85,11 +85,23 @@ function toggleVisibility(layer: { visible: boolean }) {
         <div>
           <label class="text-sm text-prose-muted font-semibold">专业符号</label>
           <div class="mt-2 gap-2 grid grid-cols-4">
-            <button class="btn flex flex-col gap-1 items-center !p-2" title="进攻箭头">
-              <div i-carbon-arrow-shift-down class="text-lg" />进攻
+            <button class="btn flex flex-col gap-1 items-center !p-2" title="细线箭头">
+              细线箭头
             </button>
-            <button class="btn flex flex-col gap-1 items-center !p-2" title="钳击箭头">
-              <div i-carbon-connect-source class="text-lg" />钳击
+            <button class="btn flex flex-col gap-1 items-center !p-2" title="突击方向">
+              突击方向
+            </button>
+            <button class="btn flex flex-col gap-1 items-center !p-2" title="钳击">
+              钳击
+            </button>
+            <button class="btn flex flex-col gap-1 items-center !p-2" title="进攻箭头">
+              进攻箭头
+            </button>
+            <button class="btn flex flex-col gap-1 items-center !p-2" title="燕尾进攻">
+              燕尾进攻
+            </button>
+            <button class="btn flex flex-col gap-1 items-center !p-2" title="战斗小队">
+              战斗小队
             </button>
           </div>
         </div>
@@ -98,17 +110,20 @@ function toggleVisibility(layer: { visible: boolean }) {
         <div>
           <label class="text-sm text-prose-muted font-semibold">数据导入</label>
           <div class="mt-2 gap-2 grid grid-cols-4">
-            <button class="btn flex flex-col gap-1 items-center !p-2" title="导入 KML/SHP">
-              <div i-carbon-document-import class="text-lg" />矢量
+            <button class="btn flex flex-col gap-1 items-center !p-2" title="导入 KML">
+              KML
+            </button>
+            <button class="btn flex flex-col gap-1 items-center !p-2" title="导入 SHP">
+              SHP
             </button>
             <button class="btn flex flex-col gap-1 items-center !p-2" title="导入 GeoTIFF">
-              <div i-carbon-image-search class="text-lg" />栅格
+              GeoTIFF
             </button>
             <button class="btn flex flex-col gap-1 items-center !p-2" title="导入图片">
-              <div i-carbon-image class="text-lg" />图片
+              图片
             </button>
             <button class="btn flex flex-col gap-1 items-center !p-2" title="导入 GLB/GLTF">
-              <div i-carbon-cube-view class="text-lg" />模型
+              3D模型
             </button>
           </div>
         </div>
